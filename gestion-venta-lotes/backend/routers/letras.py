@@ -5,16 +5,14 @@ from models import LetraResponse, LetraUpdate
 
 router = APIRouter(prefix="/letras", tags=["Letras"])
 
+SCHEMA = "gestion"
+
 
 @router.get("/{lote_id}", response_model=list[LetraResponse])
 def letras_de_lote(lote_id: str, db: Client = Depends(get_db)):
-    """Obtiene todas las letras de un lote específico."""
     result = (
-        db.table("letras")
-        .select("*")
-        .eq("lote", lote_id)
-        .order("numero_letra")
-        .execute()
+        db.schema(SCHEMA).table("letras")
+        .select("*").eq("lote", lote_id).order("numero_letra").execute()
     )
     return result.data
 
@@ -26,9 +24,8 @@ def actualizar_estado_letra(
     body: LetraUpdate,
     db: Client = Depends(get_db),
 ):
-    """Actualiza el estado de pago de una letra (Pendiente ↔ Pagado)."""
     result = (
-        db.table("letras")
+        db.schema(SCHEMA).table("letras")
         .update({"estado": body.estado})
         .eq("lote", lote_id)
         .eq("numero_letra", numero_letra)
