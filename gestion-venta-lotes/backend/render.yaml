@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: gestion-lotes-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SUPABASE_URL
+        value: https://mtbrjddbilrfhbmfqgaq.supabase.co
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
