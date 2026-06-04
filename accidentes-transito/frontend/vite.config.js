@@ -5,10 +5,11 @@ export default defineConfig({
   plugins: [react()],
   envDir: '../../',   // lee el .env raíz de ProyectoPersonal
   server: {
+    host: true,
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:8002',
+        target: 'http://localhost:8003',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

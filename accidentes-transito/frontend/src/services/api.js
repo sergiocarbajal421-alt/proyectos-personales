@@ -19,5 +19,8 @@ export const getPorDepartamento = (params = {}) =>
 export const getPorModalidad = (params = {}) =>
   api.get('/accidentes/por-modalidad', { params }).then(r => r.data)
 
-export const getPorMes = (params = {}) =>
-  api.get('/accidentes/por-mes', { params }).then(r => r.data)
+export const getPorMes  = (params = {}) =>
+  api.get('/accidentes/por-mes',  { params }).then(r => r.data)
+
+export const getPorHora = (params = {}) =>
+  api.get('/accidentes/por-hora', { params }).then(r => r.data)

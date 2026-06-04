@@ -123,6 +123,33 @@ def por_modalidad(
     return sorted(conteo.values(), key=lambda x: x["accidentes"], reverse=True)
 
 
+@router.get("/por-hora", summary="Accidentes agrupados por hora del día")
+def por_hora(
+    fecha_inicio: Optional[date] = Query(None),
+    fecha_fin:    Optional[date] = Query(None),
+    departamentos: Optional[str] = Query(None),
+    modalidades:   Optional[str] = Query(None),
+    db: Client = Depends(get_db),
+):
+    deptos = [d.strip() for d in departamentos.split(",")] if departamentos else None
+    mods   = [m.strip() for m in modalidades.split(",")]   if modalidades   else None
+    data = build_query(db, fecha_inicio, fecha_fin, deptos, mods).execute().data
+    conteo = {h: {"hora": h, "label": f"{h:02d}:00", "accidentes": 0, "fallecidos": 0, "heridos": 0}
+              for h in range(24)}
+    for r in data:
+        if not r.get("hora"):
+            continue
+        try:
+            h = int(str(r["hora"]).split(":")[0])
+            if 0 <= h < 24:
+                conteo[h]["accidentes"] += 1
+                conteo[h]["fallecidos"] += r.get("cant_fallecidos") or 0
+                conteo[h]["heridos"]    += r.get("cant_heridos")    or 0
+        except (ValueError, TypeError):
+            pass
+    return [conteo[h] for h in range(24)]
+
+
 @router.get("/por-mes", summary="Evolución mensual de accidentes")
 def por_mes(
     fecha_inicio: Optional[date] = Query(None),

@@ -11,7 +11,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.accidentes_frontend_url, "http://localhost:5174"],
+    allow_origins=[
+        settings.accidentes_frontend_url,
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5176",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
