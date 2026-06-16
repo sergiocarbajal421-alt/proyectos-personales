@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import settings
-from routers import lotes, letras
+from routers import lotes, letras, extras
 
 app = FastAPI(
     title="Gestión de Venta de Lotes API",
@@ -13,6 +13,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.frontend_url, "http://localhost:5173"],
+    allow_origin_regex=r"http://localhost:\d+",   # dev: cualquier puerto local
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,6 +21,7 @@ app.add_middleware(
 
 app.include_router(lotes.router)
 app.include_router(letras.router)
+app.include_router(extras.router)
 
 
 @app.get("/", tags=["Health"])

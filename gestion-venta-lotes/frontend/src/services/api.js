@@ -18,5 +18,15 @@ export const registrarVenta = (data) =>
 export const getLetras = (lote) =>
   api.get(`/letras/${lote}`).then(r => r.data)
 
-export const actualizarLetra = (lote, numero, estado) =>
-  api.patch(`/letras/${lote}/${numero}`, { estado }).then(r => r.data)
+export const actualizarLetra = (lote, numero, estado, fecha_pago_real = null) =>
+  api.patch(`/letras/${lote}/${numero}`, { estado, ...(fecha_pago_real && { fecha_pago_real }) }).then(r => r.data)
+
+// ── Extras (post-migración v2) ────────────────────────────────────────────────
+export const getPagosAdicionales = (lote) =>
+  api.get(`/pagos-adicionales/${lote}`).then(r => r.data)
+
+export const getDocumentos = (lote) =>
+  api.get(`/documentos/${lote}`).then(r => r.data)
+
+export const getTodosDocumentos = (params = {}) =>
+  api.get('/documentos', { params }).then(r => r.data)

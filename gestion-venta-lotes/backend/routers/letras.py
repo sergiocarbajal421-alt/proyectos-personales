@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from supabase import Client
 from database import get_db
 from models import LetraResponse, LetraUpdate
+from datetime import date
 
 router = APIRouter(prefix="/letras", tags=["Letras"])
 
@@ -24,9 +25,13 @@ def actualizar_estado_letra(
     body: LetraUpdate,
     db: Client = Depends(get_db),
 ):
+    update_data = {
+        "estado": body.estado,
+        "fecha_pago_real": str(body.fecha_pago_real or date.today()) if body.estado == "Pagado" else None,
+    }
     result = (
         db.schema(SCHEMA).table("letras")
-        .update({"estado": body.estado})
+        .update(update_data)
         .eq("lote", lote_id)
         .eq("numero_letra", numero_letra)
         .execute()

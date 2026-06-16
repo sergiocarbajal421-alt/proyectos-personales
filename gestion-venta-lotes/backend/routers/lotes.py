@@ -33,13 +33,35 @@ def resumen_general(db: Client = Depends(get_db)):
     lotes = db.schema(SCHEMA).table("vista_lotes").select("*").execute().data
     vendidos    = [l for l in lotes if l["estado"] == "Vendido"]
     disponibles = [l for l in lotes if l["estado"] == "Disponible"]
+
+    # Pagos adicionales y documentos (disponibles tras migración v2)
+    total_pa, docs_pendientes, docs_completados = 0.0, 0, 0
+    try:
+        pa = db.schema(SCHEMA).table("pagos_adicionales").select("monto").execute().data
+        total_pa = sum(r["monto"] for r in pa)
+        docs = db.schema(SCHEMA).table("documentos").select("estado").execute().data
+        docs_pendientes   = sum(1 for d in docs if d["estado"] == "Pendiente")
+        docs_completados  = sum(1 for d in docs if d["estado"] == "Completado")
+    except Exception:
+        pass   # tablas aún no creadas (migración no ejecutada)
+
+    # La "inicial" se cobra al firmar el contrato y nunca genera una letra,
+    # así que monto_pagado (suma de letras) no la incluye: hay que sumarla
+    # aparte para que el recaudado refleje el efectivo realmente cobrado.
+    total_letras_pagadas = sum(l["monto_pagado"] or 0 for l in lotes)
+    total_inicial         = sum(l["inicial"] or 0 for l in vendidos)
+
     return ResumenGeneral(
-        total_vendidos    = len(vendidos),
-        total_disponibles = len(disponibles),
-        total_venta       = sum(l["precio"] or 0 for l in lotes),
-        total_recaudado   = sum(l["monto_pagado"] or 0 for l in lotes),
-        total_pendiente   = sum(l["monto_pendiente"] or 0 for l in lotes),
-        total_atrasado    = sum(l["monto_atrasado"] or 0 for l in lotes),
+        total_vendidos               = len(vendidos),
+        total_disponibles            = len(disponibles),
+        total_venta                  = sum(l["precio"] or 0 for l in lotes),
+        total_recaudado              = total_letras_pagadas + total_inicial,
+        total_inicial                = total_inicial,
+        total_pendiente              = sum(l["monto_pendiente"] or 0 for l in lotes),
+        total_atrasado               = sum(l["monto_atrasado"] or 0 for l in lotes),
+        total_pagos_adicionales      = total_pa,
+        total_documentos_pendientes  = docs_pendientes,
+        total_documentos_completados = docs_completados,
     )
 
 
