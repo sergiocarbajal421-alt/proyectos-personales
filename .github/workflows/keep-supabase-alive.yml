@@ -11,6 +11,7 @@ jobs:
     steps:
       - name: Ping Supabase REST API
         run: |
-          curl -sf "https://mtbrjddbilrfhbmfqgaq.supabase.co/rest/v1/" \
+          curl -sf "https://mtbrjddbilrfhbmfqgaq.supabase.co/rest/v1/lotes?select=lote&limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Accept-Profile: gestion" \
             -o /dev/null -w "HTTP %{http_code}\n"
