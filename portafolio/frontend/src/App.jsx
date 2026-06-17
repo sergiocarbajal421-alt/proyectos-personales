@@ -30,8 +30,12 @@ export default function App() {
 
   useEffect(() => {
     getCV()
-      .then(setCV)
-      .catch(() => setError(true))
+      .then(data => { sessionStorage.removeItem('cv_reloads'); setCV(data) })
+      .catch(() => {
+        const n = parseInt(sessionStorage.getItem('cv_reloads') || '0')
+        if (n < 3) { sessionStorage.setItem('cv_reloads', n + 1); setTimeout(() => window.location.reload(), 3000) }
+        else setError(true)
+      })
       .finally(() => setLoading(false))
   }, [])
 

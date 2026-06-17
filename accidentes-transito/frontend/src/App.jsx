@@ -38,8 +38,12 @@ export default function App() {
       getFiltros(),
       getAccidentes({ limit: 5000 }),
     ])
-      .then(([opts, acc]) => { setOpciones(opts); setRawData(acc) })
-      .catch(() => toast.error('Error al cargar datos'))
+      .then(([opts, acc]) => { sessionStorage.removeItem('acc_reloads'); setOpciones(opts); setRawData(acc) })
+      .catch(() => {
+        const n = parseInt(sessionStorage.getItem('acc_reloads') || '0')
+        if (n < 3) { sessionStorage.setItem('acc_reloads', n + 1); setTimeout(() => window.location.reload(), 3000) }
+        else toast.error('Error al cargar datos')
+      })
       .finally(() => setLoading(false))
   }, [])
 

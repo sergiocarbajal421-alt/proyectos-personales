@@ -42,8 +42,13 @@ export default function App() {
     try {
       const [l, r] = await Promise.all([getLotes(), getResumen()])
       setLotes(l); setResumen(r)
+      sessionStorage.removeItem('gestion_reloads')
       if (silent) toast.success('Datos actualizados', { duration: 1800 })
     } catch {
+      if (!silent) {
+        const n = parseInt(sessionStorage.getItem('gestion_reloads') || '0')
+        if (n < 3) { sessionStorage.setItem('gestion_reloads', n + 1); setTimeout(() => window.location.reload(), 3000); return }
+      }
       toast.error('Error al cargar los datos')
     } finally {
       setLoading(false); setRefreshing(false)
@@ -265,9 +270,9 @@ export default function App() {
 
               {/* ── VIEW: Cuotas — panels fill full height ── */}
               {view === 'cuotas' && (
-                <div style={{ display:'grid', gridTemplateColumns:'300px 1fr', gap:16, flex:1, minHeight:0, overflow:'hidden' }}>
+                <div className="cuotas-layout">
                   {/* Left: lotes vendidos list */}
-                  <div className="card" style={{ display:'flex', flexDirection:'column', overflow:'hidden' }}>
+                  <div className="card cuotas-lotes-card" style={{ display:'flex', flexDirection:'column', overflow:'hidden' }}>
                     <div className="card-header">
                       <div className="card-title">
                         <Building2 size={14} /> Lotes vendidos
@@ -330,6 +335,26 @@ export default function App() {
           )}
         </main>
       </div>
+
+      {/* ════ MOBILE BOTTOM NAV ════ */}
+      <nav className="mobile-bottom-nav">
+        {NAV.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            className={`mobile-nav-item ${view === id ? 'active' : ''}`}
+            onClick={() => goTo(id)}
+          >
+            <Icon size={18} />
+            <span>{label}</span>
+            {id === 'lotes' && lotesAtrasados.length > 0 && (
+              <span className="mobile-nav-badge">{lotesAtrasados.length}</span>
+            )}
+          </button>
+        ))}
+      </nav>
+      <button className="mobile-fab" onClick={() => setShowVentaModal(true)} title="Nueva Venta">
+        <Plus size={22} />
+      </button>
 
       {showVentaModal && (
         <VentaModal
