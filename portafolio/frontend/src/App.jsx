@@ -27,23 +27,26 @@ export default function App() {
   const [cv, setCV] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [reconnecting, setReconnecting] = useState(false)
 
   useEffect(() => {
     getCV()
       .then(data => { sessionStorage.removeItem('cv_reloads'); setCV(data) })
       .catch(() => {
         const n = parseInt(sessionStorage.getItem('cv_reloads') || '0')
-        if (n < 3) { sessionStorage.setItem('cv_reloads', n + 1); setTimeout(() => window.location.reload(), 3000) }
+        if (n < 3) { sessionStorage.setItem('cv_reloads', n + 1); setReconnecting(true); setTimeout(() => window.location.reload(), 3000) }
         else setError(true)
       })
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) {
+  if (loading || reconnecting) {
     return (
       <div className="page-loader">
         <div className="spinner" />
-        <p style={{ marginTop: 16, fontSize: 13, opacity: 0.5 }}>Conectando al servidor…</p>
+        <p style={{ marginTop: 16, fontSize: 13, opacity: 0.5 }}>
+          {reconnecting ? 'Reconectando, por favor espera…' : 'Conectando al servidor…'}
+        </p>
       </div>
     )
   }

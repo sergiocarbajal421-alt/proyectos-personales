@@ -22,6 +22,7 @@ export default function App() {
   const [opciones,  setOpciones]  = useState(null)
   const [rawData,   setRawData]   = useState([])   // todos los registros, cargados una sola vez
   const [loading,     setLoading]     = useState(true)
+  const [reconnecting, setReconnecting] = useState(false)
   const [collapsed,   setCollapsed]   = useState(false)
   const [mobileOpen,  setMobileOpen]  = useState(false)
   const [isMobile,    setIsMobile]    = useState(() => window.innerWidth < 768)
@@ -41,7 +42,7 @@ export default function App() {
       .then(([opts, acc]) => { sessionStorage.removeItem('acc_reloads'); setOpciones(opts); setRawData(acc) })
       .catch(() => {
         const n = parseInt(sessionStorage.getItem('acc_reloads') || '0')
-        if (n < 3) { sessionStorage.setItem('acc_reloads', n + 1); setTimeout(() => window.location.reload(), 3000) }
+        if (n < 3) { sessionStorage.setItem('acc_reloads', n + 1); setReconnecting(true); setTimeout(() => window.location.reload(), 3000) }
         else toast.error('Error al cargar datos')
       })
       .finally(() => setLoading(false))
@@ -272,10 +273,10 @@ export default function App() {
           />
 
           <main className="main-content" style={{ overflow: isMobile ? 'auto' : 'hidden' }}>
-            {loading ? (
+            {(loading || reconnecting) ? (
               <div className="loading-screen">
                 <div className="spinner" />
-                <span>Cargando datos de accidentes...</span>
+                <span>{reconnecting ? 'Reconectando, por favor espera…' : 'Cargando datos de accidentes...'}</span>
               </div>
             ) : (
               <div style={{ display:'flex', flexDirection:'column', flex:1,

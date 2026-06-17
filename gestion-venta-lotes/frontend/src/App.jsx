@@ -30,6 +30,7 @@ export default function App() {
   const [loteSeleccionado, setLoteSeleccionado] = useState(null)
   const [showVentaModal,   setShowVentaModal]   = useState(false)
   const [loading,          setLoading]          = useState(true)
+  const [reconnecting,     setReconnecting]     = useState(false)
   const [refreshing,       setRefreshing]       = useState(false)
   const [view,             setView]             = useState('analitica')
   const [viewKey,          setViewKey]          = useState(0)
@@ -47,7 +48,7 @@ export default function App() {
     } catch {
       if (!silent) {
         const n = parseInt(sessionStorage.getItem('gestion_reloads') || '0')
-        if (n < 3) { sessionStorage.setItem('gestion_reloads', n + 1); setTimeout(() => window.location.reload(), 3000); return }
+        if (n < 3) { sessionStorage.setItem('gestion_reloads', n + 1); setReconnecting(true); setTimeout(() => window.location.reload(), 3000); return }
       }
       toast.error('Error al cargar los datos')
     } finally {
@@ -201,7 +202,12 @@ export default function App() {
 
         {/* ════ MAIN ════ */}
         <main className="main">
-          {loading ? (
+          {reconnecting ? (
+            <div className="skeleton-screen" style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:12 }}>
+              <div className="spinner" />
+              <span style={{ fontSize:14, opacity:0.6 }}>Reconectando, por favor espera…</span>
+            </div>
+          ) : loading ? (
             <div className="skeleton-screen">
               <div className="skeleton-kpis">
                 {[...Array(6)].map((_, i) => <div key={i} className="skeleton skeleton-kpi" />)}
