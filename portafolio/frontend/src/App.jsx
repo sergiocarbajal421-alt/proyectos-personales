@@ -36,7 +36,12 @@ export default function App() {
   }, [])
 
   if (loading) {
-    return <div className="page-loader"><div className="spinner" /></div>
+    return (
+      <div className="page-loader">
+        <div className="spinner" />
+        <p style={{ marginTop: 16, fontSize: 13, opacity: 0.5 }}>Conectando al servidor…</p>
+      </div>
+    )
   }
 
   if (error || !cv) {
