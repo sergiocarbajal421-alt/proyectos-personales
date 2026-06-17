@@ -241,12 +241,14 @@ export default function App() {
                   <a
                     href="https://www.linkedin.com/in/sergiocarbajal/"
                     target="_blank" rel="noreferrer"
-                    style={{ display:'flex', alignItems:'center', gap:5, fontSize:12, color:'var(--text-muted, #64748b)', textDecoration:'none', opacity:0.75 }}
+                    className="dev-credit"
+                    style={{ display:'flex', alignItems:'center', gap:5, fontSize:12, color:'#64748b', textDecoration:'none', opacity:0.85 }}
                     onMouseEnter={e => e.currentTarget.style.opacity=1}
-                    onMouseLeave={e => e.currentTarget.style.opacity=0.75}
+                    onMouseLeave={e => e.currentTarget.style.opacity=0.85}
                   >
-                    <Linkedin size={13} />
-                    Desarrollado por <strong style={{ marginLeft:3 }}>Sergio Carbajal</strong>
+                    Desarrollado por
+                    <Linkedin size={13} color="#0A66C2" style={{ flexShrink:0 }} />
+                    <strong style={{ color:'#0A66C2' }}>Sergio Carbajal</strong>
                   </a>
                   <button
                     className="btn btn-secondary btn-sm"

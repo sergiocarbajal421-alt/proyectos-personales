@@ -289,6 +289,10 @@ body {
   background: var(--bg);
 }
 
+/* ── Mobile bottom nav + FAB (oculto en desktop) ── */
+.mobile-bottom-nav { display: none; }
+.mobile-fab        { display: none; }
+
 /* Scrollable view wrapper (dashboard, analítica) */
 .view-scroll {
   flex: 1;
@@ -676,6 +680,16 @@ tbody tr:hover .chevron-icon { color: var(--primary); }
 
 .table-empty { text-align: center; padding: 48px !important; color: var(--dim) !important; font-size: 13px; }
 
+/* ── Cuotas: layout lista + detalle ─────────────────*/
+.cuotas-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* ── Letras Panel ────────────────────────────────── */
 .panel-empty {
   display: flex;
@@ -1004,8 +1018,89 @@ tbody tr:hover .chevron-icon { color: var(--primary); }
   /* !important para que gane al inline style de JS (gridTemplateColumns: '60px 1fr') */
   .app { grid-template-columns: 1fr !important; }
   .sidebar { display: none !important; }
-  .main { padding: 16px; max-height: unset; }
+  .main {
+    padding: 14px;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
   .metrics-grid { grid-template-columns: repeat(2,1fr); }
   .grid-main { grid-template-columns: 1fr !important; }
   .form-row { grid-template-columns: 1fr; }
+  .page-header { flex-direction: column; gap: 8px; }
+  .page-header h1 { font-size: 17px; }
+  .page-header p { font-size: 11px; }
+  .dev-credit { display: none !important; }
+
+  /* Sidebar oculto → nav inferior fija + botón flotante reemplazan la navegación */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 60px;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 14px rgba(0,0,0,0.07);
+    z-index: 500;
+  }
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    position: relative;
+    padding: 6px 0 4px;
+  }
+  .mobile-nav-item.active { color: var(--primary); }
+  .mobile-nav-badge {
+    position: absolute;
+    top: 2px; right: calc(50% - 20px);
+    background: var(--danger);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 0 5px;
+    min-width: 14px;
+    line-height: 14px;
+    text-align: center;
+    border-radius: 99px;
+  }
+  .mobile-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: 16px;
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: 0 6px 18px rgba(37,99,235,0.45);
+    z-index: 500;
+    cursor: pointer;
+  }
+  .mobile-fab:active { background: var(--primary-d); }
+
+  /* Cuotas: lista de lotes arriba (scroll horizontal-ish acotado), detalle abajo */
+  .cuotas-layout { grid-template-columns: 1fr !important; grid-template-rows: auto 1fr; }
+  .cuotas-lotes-card { max-height: 180px; }
+
+  /* Tabla: scroll táctil más fluido */
+  .table-wrap { -webkit-overflow-scrolling: touch; }
+}
+
+@media(max-width:480px){
+  .av-gauge-row { flex-direction: column; }
+  .av-gauge-row > div:first-child { align-self: center; }
+  .av-cartera-grid { grid-template-columns: 1fr !important; }
 }
