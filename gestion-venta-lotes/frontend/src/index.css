@@ -1029,6 +1029,8 @@ tbody tr:hover .chevron-icon { color: var(--primary); }
   .page-header h1 { font-size: 17px; }
   .page-header p { font-size: 11px; }
   .dev-credit { display: none !important; }
+  .main { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
   /* Sidebar oculto → nav inferior fija + botón flotante reemplazan la navegación */
   .mobile-bottom-nav {
